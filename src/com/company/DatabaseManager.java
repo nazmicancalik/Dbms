@@ -1,10 +1,12 @@
 package com.company;
 
+import java.io.IOException;
 import java.util.Scanner;
 
 public class DatabaseManager {
 
     SystemCatalogManager sysCatManager;
+    FileManager fileManager;
     String[] operations = {
             "\t1.Create a Type",
             "\t2.Delete a Type",
@@ -15,13 +17,20 @@ public class DatabaseManager {
             "\t7.List All Records of a Type"
     };
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         DatabaseManager databaseManager = new DatabaseManager();
     }
 
-    public DatabaseManager(){
+    public DatabaseManager() throws IOException {
         sysCatManager = new SystemCatalogManager();
-        this.chooseOperation();
+        fileManager = new FileManager("myfile.dat",true);
+        chooseOperation();
+
+        fileManager.writeString("Nazmican Çalık",14);
+
+        //You have to seek first to be able to read. Pointers are everything.
+        fileManager.seek(0,true);
+        System.out.println(fileManager.readString(14));
     }
 
     // Operation choose interface.
