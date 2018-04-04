@@ -23,20 +23,14 @@ public class DatabaseManager {
 
     public DatabaseManager() throws IOException {
         sysCatManager = new SystemCatalogManager();
-        fileManager = new FileManager("myfile.dat",true);
         chooseOperation();
-
-        fileManager.writeString("Nazmican Çalık",14);
-
-        //You have to seek first to be able to read. Pointers are everything.
-        fileManager.seek(0,true);
-        System.out.println(fileManager.readString(14));
     }
 
     // Operation choose interface.
     // Invokes the corresponding Operation Method.
-    public void chooseOperation(){
+    public void chooseOperation() throws IOException {
         System.out.println("Please enter the number of the operation you want to take:");
+
         //Print the operations selection interface.
         for (String operation : operations){
             System.out.println(operation);
@@ -62,8 +56,26 @@ public class DatabaseManager {
         }
     }
 
-    public void createType(){
-        System.out.println("Created a type.");
+    public void createType() throws IOException {
+        System.out.println("Creating a type...");
+        Scanner scanner = new Scanner(System.in);
+
+        String typeName;
+        int fieldNumber;
+
+        System.out.println("Please enter the NAME of the type you want to create: ");
+        typeName = scanner.next();
+
+        System.out.println("Please enter the NUMBER OF FIELDS of the type you want to create: ");
+        fieldNumber = scanner.nextInt();
+
+        String[] fieldNames = new String[fieldNumber];
+        for(int i = 0; i < fieldNumber; i++){
+           System.out.println("Please enter the name of the field number " + (i + 1));
+           fieldNames[i] = scanner.next();
+        }
+
+        this.sysCatManager.increaseTypeCount();
     }
 
     public void deleteType(){

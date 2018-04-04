@@ -59,4 +59,28 @@ public class FileManager {
             raf.seek(raf.getFilePointer() + offset);
         }
     }
+
+    public short readByte() throws java.io.IOException
+    {
+        return (short) raf.readUnsignedByte();
+    }
+
+    public void writeByte(short b) throws java.io.IOException
+    {
+        raf.write(b & 0xff);
+    }
+
+    public void writeShort(int s) throws java.io.IOException
+    {
+        raf.writeShort(s);
+    }
+
+    public int readShort() throws java.io.IOException
+    {
+        return raf.readUnsignedShort();
+    }
+
+    public void seekToStart() throws IOException {
+        raf.seek(0);
+    }
 }
