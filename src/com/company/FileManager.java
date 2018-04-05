@@ -60,6 +60,11 @@ public class FileManager {
         }
     }
 
+    public void seekToEnd() throws IOException
+    {
+        raf.seek(raf.length());
+    }
+
     public short readByte() throws java.io.IOException
     {
         return (short) raf.readUnsignedByte();

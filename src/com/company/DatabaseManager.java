@@ -1,5 +1,6 @@
 package com.company;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -75,7 +76,12 @@ public class DatabaseManager {
            fieldNames[i] = scanner.next();
         }
 
+
+        // Increase type count and add the necessary info for the new type.
         this.sysCatManager.increaseTypeCount();
+        this.sysCatManager.addTypeInfo(typeName,fieldNumber,fieldNames);
+        FileOutputStream out = new FileOutputStream(typeName+".dat");
+        out.close();
     }
 
     public void deleteType(){
