@@ -8,7 +8,7 @@ public class TypeManager {
         fileManager = new FileManager(typeName,true);
     }
 
-    /*public addRecord(){
+    public int getFieldNumber(){
 
-    }*/
+    }
 }

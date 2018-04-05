@@ -21,6 +21,12 @@ public class SystemCatalogManager {
         fileManager.writeInt(typeCount);
     }
 
+    public void initTypeNames() throws IOException {
+        for (int i = 0;i<typeCount;i++){
+            this.typeNames.add(fileManager.readString(20));
+            System.out.println(typeNames.get(0));
+        }
+    }
     public void addTypeInfo(String name,int fieldNumber,String[] fieldNames) throws IOException {
         fileManager.seekToEnd();
         fileManager.writeString(name,20); // 20 is the fixed length

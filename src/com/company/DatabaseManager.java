@@ -99,8 +99,12 @@ public class DatabaseManager {
         System.out.println("Please enter the TYPE NAME of the record you want to create.");
         String typeOfTheRecord = scanner.next();
 
+        // Open the type file.
+        TypeManager typeManager = new TypeManager(typeOfTheRecord + ".dat");
         if(this.sysCatManager.checkTypeExists(typeOfTheRecord)){
-            // Create the record
+            for(int i = 0;i <  ){
+
+            }
         }else{
             System.out.println("Type you want to create doesn't exist");
             return;
