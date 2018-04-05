@@ -7,8 +7,4 @@ public class TypeManager {
     public TypeManager(String typeName){
         fileManager = new FileManager(typeName,true);
     }
-
-    public int getFieldNumber(){
-
-    }
 }

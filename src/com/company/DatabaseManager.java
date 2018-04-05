@@ -92,7 +92,7 @@ public class DatabaseManager {
         System.out.println("Listed all types");
     }
 
-    public void createRecord(){
+    public void createRecord() throws IOException {
         System.out.println("Creating a record.");
         Scanner scanner = new Scanner(System.in);
 
@@ -101,14 +101,14 @@ public class DatabaseManager {
 
         // Open the type file.
         TypeManager typeManager = new TypeManager(typeOfTheRecord + ".dat");
-        if(this.sysCatManager.checkTypeExists(typeOfTheRecord)){
-            for(int i = 0;i <  ){
-
+        //if(this.sysCatManager.checkTypeExists(typeOfTheRecord)){
+            for(int i = 0;i <  sysCatManager.getFieldNumberOfAType(typeOfTheRecord);i++){
+                System.out.println("yaeaadad");
             }
-        }else{
-            System.out.println("Type you want to create doesn't exist");
-            return;
-        }
+        //}else{
+        //    System.out.println("Type you want to create doesn't exist");
+        //    return;
+        //}
     }
 
     public void deleteRecord(){
