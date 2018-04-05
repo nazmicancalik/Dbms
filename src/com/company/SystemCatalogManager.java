@@ -77,7 +77,6 @@ public class SystemCatalogManager {
     public void setTypeCount(int aTypeCount) throws IOException {
         fileManager.seekToStart();
         fileManager.writeInt(aTypeCount);
-        System.out.println("TYPE COUNT IS : " + typeCount);
     }
 
     public int getTypeCount(){
@@ -87,7 +86,6 @@ public class SystemCatalogManager {
     public void setNumberOfDeletedTypes(int aNumberOfDeletedTypes) throws IOException {
         fileManager.seek(4,true);   // Go to the position of number of deleted types.
         fileManager.writeInt(aNumberOfDeletedTypes);
-        System.out.println("NUMBER OF DELETED TYPES IS : " + numberOfDeletedTypes);
     }
 
     public int getNumberOfDeletedTypes(){
