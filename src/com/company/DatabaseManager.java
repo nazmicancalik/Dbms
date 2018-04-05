@@ -93,7 +93,18 @@ public class DatabaseManager {
     }
 
     public void createRecord(){
-        System.out.println("Created a Record.");
+        System.out.println("Creating a record.");
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println("Please enter the TYPE NAME of the record you want to create.");
+        String typeOfTheRecord = scanner.next();
+
+        if(this.sysCatManager.checkTypeExists(typeOfTheRecord)){
+            // Create the record
+        }else{
+            System.out.println("Type you want to create doesn't exist");
+            return;
+        }
     }
 
     public void deleteRecord(){
@@ -107,5 +118,4 @@ public class DatabaseManager {
     public void listALlRecordsOfAType(){
         System.out.println("All records of a type.");
     }
-
 }

@@ -1,15 +1,18 @@
 package com.company;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class SystemCatalogManager {
 
     FileManager fileManager;
     int typeCount;
+    ArrayList<String> typeNames;
 
     public SystemCatalogManager() throws IOException {
         fileManager = new FileManager("syscat.ctg",true);
         typeCount = fileManager.readInt();
+        typeNames = new ArrayList<>(typeCount);
     }
 
     public void increaseTypeCount() throws IOException {
@@ -25,5 +28,14 @@ public class SystemCatalogManager {
         for (String fieldName : fieldNames){
             fileManager.writeString(fieldName,20);
         }
+    }
+
+    public boolean checkTypeExists(String typeToCheck){
+        for(String typeName: typeNames){
+            if (typeName.equals(typeToCheck)){
+                return true;
+            }
+        }
+        return false;
     }
 }
