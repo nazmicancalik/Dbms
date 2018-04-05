@@ -12,18 +12,24 @@ public class SystemCatalogManager {
     public static final int NUMBER_OF_RECORDS_IN_A_PAGE = 100;
     public static final int MAX_NUMBER_OF_FIELDS_IN_A_RECORD = 10;
     public static final int NUMBER_OF_EMPTY_PAGES_AT_START = 3;
-    public static final int PAGE_SIZE = 10*228;
+    public static final int FIELD_NAME_LENGTH = 20;
 
     FileManager fileManager;
 
     // Header
     int typeCount;
     int numberOfDeletedTypes;
-
+/*
     //Record Fields
     int[] isDeletedData;
     String[] typeNames;
     int[] fieldCounts;
+    Map<String,String[]> fieldNames;
+*/
+    //Record Fields
+    ArrayList<Integer> isDeletedData = new ArrayList<>();
+    ArrayList<String> typeNames = new ArrayList<>();
+    ArrayList<Integer> fieldCounts = new ArrayList<>();
     Map<String,String[]> fieldNames;
 
     public SystemCatalogManager() throws IOException {
@@ -35,9 +41,31 @@ public class SystemCatalogManager {
             fillSystemCatalogFile();
         }
 
+        init();
+    }
+
+
+    public void init() throws IOException {
+
+        // Read Header
         fileManager.seekToStart();
         typeCount = fileManager.readInt();
         numberOfDeletedTypes = fileManager.readInt();
+        fieldNames = new HashMap<>();
+
+        // Start to read Records if there is any.
+        if(typeCount != 0){
+            for(int i = 0;i < typeCount;i++){
+                isDeletedData.add(fileManager.readInt());                      // Read isdeleted data.
+                typeNames.add(fileManager.readString(FIELD_NAME_LENGTH).trim());   // Read type name.
+                fieldCounts.add(fileManager.readInt());                     // Read field count of that type.
+                String[] tempFieldNames = new String[fieldCounts.get(i)];
+                for(int j = 0; j < fieldCounts.get(i); j++){
+                    tempFieldNames[j] = fileManager.readString(FIELD_NAME_LENGTH).trim();
+                }
+                fieldNames.put(typeNames.get(i),tempFieldNames);
+            }
+        }
     }
 
     private void fillSystemCatalogFile() throws IOException {
@@ -72,6 +100,7 @@ public class SystemCatalogManager {
 
         }
         fileManager.seekToEnd();
+        fileManager.writeInt(0);                // Not deleted.
         fileManager.writeString(name,20); // 20 is the fixed length
         fileManager.writeInt(fieldNumber); // Write the field number
         for (String fieldName : fieldNames){
