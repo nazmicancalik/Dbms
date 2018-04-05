@@ -70,14 +70,14 @@ public class FileManager {
         raf.write(b & 0xff);
     }
 
-    public void writeShort(int s) throws java.io.IOException
+    public void writeInt(int s) throws java.io.IOException
     {
-        raf.writeShort(s);
+        raf.writeInt(s);
     }
 
-    public int readShort() throws java.io.IOException
+    public int readInt() throws java.io.IOException
     {
-        return raf.readUnsignedShort();
+        return raf.readInt();
     }
 
     public void seekToStart() throws IOException {

@@ -8,15 +8,14 @@ public class SystemCatalogManager {
     int typeCount;
     public SystemCatalogManager() throws IOException {
         fileManager = new FileManager("syscat.ctg",true);
-        fileManager.seekToStart();
+        typeCount = fileManager.readInt();
     }
 
     public void increaseTypeCount() throws IOException {
-        fileManager.seekToStart();
-        typeCount = fileManager.readShort();
         typeCount++;
-        fileManager.writeShort(this.typeCount);
         fileManager.seekToStart();
-        System.out.println(fileManager.readShort());
+        fileManager.writeInt(typeCount);
+        fileManager.seekToStart();
+        System.out.println(fileManager.readInt());
     }
 }
