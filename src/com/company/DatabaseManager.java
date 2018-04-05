@@ -78,9 +78,11 @@ public class DatabaseManager {
 
 
         // Increase type count and add the necessary info for the new type.
-        this.sysCatManager.increaseTypeCount();
+        this.sysCatManager.setTypeCount(this.sysCatManager.getTypeCount()+1);
         this.sysCatManager.addTypeInfo(typeName,fieldNumber,fieldNames);
         FileOutputStream out = new FileOutputStream(typeName+".dat");
+        // Fill the table.
+        // TODO Type manager can work here.
         out.close();
     }
 

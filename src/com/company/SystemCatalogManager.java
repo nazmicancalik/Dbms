@@ -15,8 +15,12 @@ public class SystemCatalogManager {
     public static final int PAGE_SIZE = 10*228;
 
     FileManager fileManager;
+
+    // Header
     int typeCount;
-    int pageCount;
+    int numberOfDeletedTypes;
+
+    //Record Fields
     int[] isDeletedData;
     String[] typeNames;
     int[] fieldCounts;
@@ -27,61 +31,46 @@ public class SystemCatalogManager {
         boolean catalogExists = f.exists();
         fileManager = new FileManager("syscat.ctg",true);
         if(!catalogExists){
+            System.out.println("New Database is created. Initializing System Catalog...");
             fillSystemCatalogFile();
         }
 
+        fileManager.seekToStart();
         typeCount = fileManager.readInt();
-        pageCount = fileManager.readInt();
-        typeNames = new String[0];
+        numberOfDeletedTypes = fileManager.readInt();
     }
 
     private void fillSystemCatalogFile() throws IOException {
         fileManager.seekToStart();
         fileManager.writeInt(0);    // Number of types.
-        fileManager.writeInt(NUMBER_OF_EMPTY_PAGES_AT_START);    // Number of pages.
-        for(int i = 0;i < NUMBER_OF_EMPTY_PAGES_AT_START;i++){
-            addEmptyPage();
-        }
+        fileManager.writeInt(0);    // Number of deleted types.
     }
 
-    private void addEmptyPage() throws IOException {
-        fileManager.seekToEnd();
-        fileManager.writeInt(0);    // TODO Number of empty records.
-        for(int i = 0;i < NUMBER_OF_RECORDS_IN_A_PAGE;i++){
-            fileManager.writeInt(0);    // Is deleted : no
-            fileManager.writeString("",20);     // Type Name
-            fileManager.writeInt(0);    // Number of fields.
-            for(int j = 0; j < MAX_NUMBER_OF_FIELDS_IN_A_RECORD;j++){
-                fileManager.writeString("",20);
-            }
-        }
-    }
-
-    public void getPage(int pageIndex) throws IOException {
-        fileManager.seek(8+pageIndex*PAGE_SIZE,true);
-        fieldNames = new HashMap<>();
-        for(int i = 0; i < NUMBER_OF_RECORDS_IN_A_PAGE;i++){
-            isDeletedData[i] = fileManager.readInt();
-            typeNames[i] = fileManager.readString(20).trim();
-            fieldCounts[i] = fileManager.readInt();
-            String[] fieldNamesTemp = new String[fieldCounts[i]];
-            for (int j = 0;j < fieldCounts[i];j++){
-                String currentFieldName = fileManager.readString(20).trim();
-                if (currentFieldName.length()!=0){
-                    fieldNamesTemp[i] = currentFieldName;
-                }
-            }
-            fieldNames.put(typeNames[i],fieldNamesTemp);
-        }
-    }
-
-    public void increaseTypeCount() throws IOException {
-        typeCount++;
+    public void setTypeCount(int aTypeCount) throws IOException {
         fileManager.seekToStart();
-        fileManager.writeInt(typeCount);
+        fileManager.writeInt(aTypeCount);
+        System.out.println("TYPE COUNT IS : " + typeCount);
+    }
+
+    public int getTypeCount(){
+        return this.typeCount;
+    }
+
+    public void setNumberOfDeletedTypes(int aNumberOfDeletedTypes) throws IOException {
+        fileManager.seek(4,true);   // Go to the position of number of deleted types.
+        fileManager.writeInt(aNumberOfDeletedTypes);
+        System.out.println("NUMBER OF DELETED TYPES IS : " + numberOfDeletedTypes);
+    }
+
+    public int getNumberOfDeletedTypes(){
+        return numberOfDeletedTypes;
     }
 
     public void addTypeInfo(String name,int fieldNumber,String[] fieldNames) throws IOException {
+        if (numberOfDeletedTypes != 0){
+            // Find the location to insert the type field.
+
+        }
         fileManager.seekToEnd();
         fileManager.writeString(name,20); // 20 is the fixed length
         fileManager.writeInt(fieldNumber); // Write the field number
@@ -96,7 +85,7 @@ public class SystemCatalogManager {
         while(currentTypeName != typeName){
             int fieldCount = fileManager.readInt();
             fileManager.seek(fieldCount*20,false);
-            currentTypeName = fileManager.readString(20);
+            currentTypeName = fileManager.readString(20).trim();
         }
 
         // Return the number of fields for the given type.
