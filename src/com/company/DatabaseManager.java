@@ -1,7 +1,9 @@
 package com.company;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class DatabaseManager {
@@ -71,11 +73,11 @@ public class DatabaseManager {
         fieldNumber = scanner.nextInt();
 
         String[] fieldNames = new String[fieldNumber];
+        Arrays.fill(fieldNames,"");   //Fill it with empty string.
         for(int i = 0; i < fieldNumber; i++){
            System.out.println("Please enter the name of the field number " + (i + 1));
            fieldNames[i] = scanner.next();
         }
-
 
         // Increase type count and add the necessary info for the new type.
         this.sysCatManager.setTypeCount(this.sysCatManager.getTypeCount()+1);
@@ -85,8 +87,27 @@ public class DatabaseManager {
         typeManager.init();
     }
 
-    public void deleteType(){
-        System.out.println("Deleted a type.");
+    public void deleteType() throws IOException {
+        System.out.println("Delete operation is initializing...");
+        System.out.println("Please enter the type you want to delete");
+        Scanner scanner = new Scanner(System.in);
+
+        String typeToDelete = scanner.next();
+        int typeIndex = sysCatManager.getTypeIndex(typeToDelete);
+        if (typeIndex == -1) {
+            System.out.println("The type you want to delete doesn't exist.");
+            return;
+        }
+        sysCatManager.isDeletedData.add(typeIndex,1);   // Delete operation.
+        sysCatManager.setNumberOfDeletedTypes(sysCatManager.getNumberOfDeletedTypes()+1);   // Increase the number of deleted types.
+        // TODO UPDATE SYS CAT WRITE TO FILE
+        System.out.println("Updating the System Catalog...");
+        File f = new File(typeToDelete+".t");
+        if (f.exists()){
+            System.out.println("Deleting the corresponding type file...");
+            f.delete();         //  Delete the file.
+        }
+        System.out.println("Type deleted succesfully.");
     }
 
     public void listTypes(){

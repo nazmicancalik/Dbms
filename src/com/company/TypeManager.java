@@ -18,8 +18,8 @@ public class TypeManager {
     public TypeManager(String aTypeName) throws IOException {
         systemCatalogManager = new SystemCatalogManager();
         typeName = aTypeName;
-        fileManager = new FileManager(typeName + ".dat", true);
-        pageCount = 0;
+        fileManager = new FileManager(typeName + ".t", true);
+        pageCount = 1;  // Default one page.
     }
 
     public void init() throws IOException {
@@ -28,7 +28,7 @@ public class TypeManager {
 
     public void addPage() throws IOException {
         Page emptyPage = new Page(typeName);        // Initialize an empty page.
-        writePage(emptyPage,systemCatalogManager.getPageCountOfAType(typeName));
+        writePage(emptyPage,systemCatalogManager.getPageCountOfAType(typeName)-1);
     }
 
     public void writePage(Page page, int index) throws IOException {

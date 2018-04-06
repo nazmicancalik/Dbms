@@ -90,25 +90,17 @@ public class SystemCatalogManager {
 
         }
         fileManager.seekToEnd();
-        fileManager.writeInt(0);                // Not deleted.
-        fileManager.writeInt(0);                // Page Count = 0
-        fileManager.writeString(name,20); // 20 is the fixed length
-        fileManager.writeInt(fieldNumber); // Write the field number
+        fileManager.writeInt(0);                    // Not deleted.
+        fileManager.writeInt(1);                    // Page Count = 1
+        fileManager.writeString(name,20);       // 20 is the fixed length
+        fileManager.writeInt(fieldNumber);             // Write the field number
         for (String fieldName : fieldNames){
             fileManager.writeString(fieldName,20);
         }
     }
 
     public int getPageCountOfAType(String typeName){
-        if (typeNames.isEmpty()){
-            return -1;
-        }
-        int i;
-        for(i=0;i < typeNames.size();i++){
-            if (typeNames.get(i).equals(typeName))
-                break;
-        }
-        return pageCounts.get(i);
+        return pageCounts.get(getTypeIndex(typeName));
     }
 
     public int getFieldNumberOfAType(String typeName) throws IOException {
@@ -122,5 +114,17 @@ public class SystemCatalogManager {
 
         // Return the number of fields for the given type.
         return fileManager.readInt();
+    }
+
+    public int getTypeIndex(String typeName){
+        if (typeNames.isEmpty()){
+            return -1;
+        }
+        int i;
+        for(i=0;i < typeNames.size();i++){
+            if (typeNames.get(i).equals(typeName))
+                return i;
+        }
+        return -1;
     }
 }
