@@ -9,25 +9,16 @@ import java.util.Map;
 
 public class SystemCatalogManager {
 
-    public static final int NUMBER_OF_RECORDS_IN_A_PAGE = 100;
-    public static final int MAX_NUMBER_OF_FIELDS_IN_A_RECORD = 10;
-    public static final int NUMBER_OF_EMPTY_PAGES_AT_START = 3;
     public static final int FIELD_NAME_LENGTH = 20;
-
     FileManager fileManager;
 
     // Header
     int typeCount;
     int numberOfDeletedTypes;
-/*
-    //Record Fields
-    int[] isDeletedData;
-    String[] typeNames;
-    int[] fieldCounts;
-    Map<String,String[]> fieldNames;
-*/
+
     //Record Fields
     ArrayList<Integer> isDeletedData = new ArrayList<>();
+    ArrayList<Integer> pageCounts = new ArrayList<>();
     ArrayList<String> typeNames = new ArrayList<>();
     ArrayList<Integer> fieldCounts = new ArrayList<>();
     Map<String,String[]> fieldNames;
@@ -57,6 +48,7 @@ public class SystemCatalogManager {
         if(typeCount != 0){
             for(int i = 0;i < typeCount;i++){
                 isDeletedData.add(fileManager.readInt());                      // Read isdeleted data.
+                pageCounts.add(fileManager.readInt());
                 typeNames.add(fileManager.readString(FIELD_NAME_LENGTH).trim());   // Read type name.
                 fieldCounts.add(fileManager.readInt());                     // Read field count of that type.
                 String[] tempFieldNames = new String[fieldCounts.get(i)];
@@ -99,11 +91,24 @@ public class SystemCatalogManager {
         }
         fileManager.seekToEnd();
         fileManager.writeInt(0);                // Not deleted.
+        fileManager.writeInt(0);                // Page Count = 0
         fileManager.writeString(name,20); // 20 is the fixed length
         fileManager.writeInt(fieldNumber); // Write the field number
         for (String fieldName : fieldNames){
             fileManager.writeString(fieldName,20);
         }
+    }
+
+    public int getPageCountOfAType(String typeName){
+        if (typeNames.isEmpty()){
+            return -1;
+        }
+        int i;
+        for(i=0;i < typeNames.size();i++){
+            if (typeNames.get(i).equals(typeName))
+                break;
+        }
+        return pageCounts.get(i);
     }
 
     public int getFieldNumberOfAType(String typeName) throws IOException {
