@@ -100,7 +100,8 @@ public class DatabaseManager {
         }
         sysCatManager.isDeletedData.add(typeIndex,1);   // Delete operation.
         sysCatManager.setNumberOfDeletedTypes(sysCatManager.getNumberOfDeletedTypes()+1);   // Increase the number of deleted types.
-        // TODO UPDATE SYS CAT WRITE TO FILE
+        // Update System Catalog (Print to the file.)
+        sysCatManager.update();
         System.out.println("Updating the System Catalog...");
         File f = new File(typeToDelete+".t");
         if (f.exists()){
@@ -111,7 +112,12 @@ public class DatabaseManager {
     }
 
     public void listTypes(){
-        System.out.println("Listed all types");
+        System.out.println("Listing all types...\n");
+        for (int i = 0; i < sysCatManager.typeNames.size();i++){
+            if (sysCatManager.isDeletedData.get(i) == 0) {
+                System.out.println("\t"+sysCatManager.typeNames.get(i));
+            }
+        }
     }
 
     public void createRecord() throws IOException {

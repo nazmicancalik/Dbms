@@ -127,4 +127,24 @@ public class SystemCatalogManager {
         }
         return -1;
     }
+
+    public void update() throws IOException {
+        fileManager.seekToStart();
+        fileManager.writeInt(typeCount);
+        fileManager.writeInt(numberOfDeletedTypes);
+        for(int i = 0;i < typeNames.size();i++){
+            fileManager.writeInt(isDeletedData.get(i));               // isDeleted flag
+            fileManager.writeInt(pageCounts.get(i));                  // page Count
+            fileManager.writeString(typeNames.get(i),20);      //  Type name
+            fileManager.writeInt(fieldCounts.get(i));                 // Field Count
+
+            String[] fields = fieldNames.get(typeNames.get(i));         // Get the field names of the current type.
+            for (int j = 0; j<fields.length;j++){
+                if(fields[i].equals("")){                              // For skipping the empty field names.
+                    break;
+                }
+                fileManager.writeString(fields[i],20);           // Write the field name.
+            }
+        }
+    }
 }
