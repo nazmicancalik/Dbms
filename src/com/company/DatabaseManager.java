@@ -160,8 +160,15 @@ public class DatabaseManager {
         typeManager.addRecord(fields);
     }
 
-    public void deleteRecord(){
-        System.out.println("Deleted a record.");
+    public void deleteRecord() throws IOException {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Please enter the TYPE NAME of the record you want to delete");
+        String typeName = scanner.next();
+        System.out.println("Please enter the PRIMARY KEY of the record you want to delete");
+        int primaryKeyToDelete = scanner.nextInt();
+
+        TypeManager typeManager = new TypeManager(typeName);
+        typeManager.deleteRecord(primaryKeyToDelete);
     }
 
     public void searchRecord() throws IOException {

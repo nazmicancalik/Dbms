@@ -20,7 +20,6 @@ public class TypeManager {
     int pageCount;
 
     public TypeManager(String aTypeName) throws IOException {
-        // TODO If the file exist already, just read the file and load the required pages and config (header)
         File file = new File(aTypeName+".t");
         boolean fileExists = file.exists();
 
@@ -51,7 +50,7 @@ public class TypeManager {
 
         // Start to read Records if there is any.
         if(page.numberOfRecords != 0){
-            for(int i = 0;i < page.numberOfRecords; i++){
+            for(int i = 0;i < NUMBER_OF_RECORDS_IN_PAGE; i++){
                 page.isDeleted[i] = inFm.readInt();
                 for(int j = 0; j < MAX_NUMBER_OF_FIELDS_IN_A_RECORD;j++){
                     page.fieldValues[i][j] = inFm.readInt();
@@ -207,6 +206,40 @@ public class TypeManager {
                     }
                 }
             }
+        }
+    }
+
+    public void deleteRecord(int primaryKey) throws IOException {
+        int pageCount = systemCatalogManager.getPageCountOfAType(typeName);
+        Page page;
+        boolean found = false;
+        for (int i = 0;i < pageCount && !found;i++){
+            page = loadPage(i);
+            System.out.println("Reading Page #"+i +" ...");
+            // If the page is not full totally.
+            if (page.numberOfRecords != 0){
+                for (int j = 0; j < NUMBER_OF_RECORDS_IN_PAGE;j++){
+                    // If the record is not empty or deleted.
+                    if (page.isDeleted[j] == 0){
+                        // Check for the given records first field (primary key)
+                        if(page.fieldValues[j][0] == primaryKey) {
+                            System.out.println("Record is found on page #" + i + " record #"+ j);
+                            System.out.println("Deleting the record...");
+                            page.isDeleted[j] = 1;
+                            page.numberOfDeletedRecords++;
+                            page.numberOfRecords--;
+                            writePage(page,i);
+                            System.out.println("Record is succesfully deleted from Page #" + i);
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!found){
+            System.out.println("The record you want to delete doesn't exist.");
         }
     }
 }
