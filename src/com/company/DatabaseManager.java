@@ -8,6 +8,7 @@ import java.util.Scanner;
 
 public class DatabaseManager {
 
+    public static final String separator = "==========================================================";
     SystemCatalogManager sysCatManager;
     FileManager fileManager;
     String[] operations = {
@@ -22,40 +23,55 @@ public class DatabaseManager {
 
     public static void main(String[] args) throws IOException {
         DatabaseManager databaseManager = new DatabaseManager();
+        Scanner scanner = new Scanner(System.in);
+        databaseManager.chooseOperation();
     }
 
     public DatabaseManager() throws IOException {
         sysCatManager = new SystemCatalogManager();
-        chooseOperation();
     }
 
     // Operation choose interface.
     // Invokes the corresponding Operation Method.
     public void chooseOperation() throws IOException {
-        System.out.println("Please enter the number of the operation you want to take:");
 
-        //Print the operations selection interface.
-        for (String operation : operations){
-            System.out.println(operation);
-        }
         Scanner scanner = new Scanner(System.in);
-        int selection = scanner.nextInt();
+        boolean operate = true;
+        while(operate){
+            System.out.println("Please enter the number of the operation you want to take:");
+            System.out.println("Please enter -1 to terminate:\n");
+            //Print the operations selection interface.
+            for (String operation : operations){
+                System.out.println(operation);
+            }
 
-        switch(selection){
-            case 1: createType();
-                break;
-            case 2: deleteType();
-                break;
-            case 3: listTypes();
-                break;
-            case 4: createRecord();
-                break;
-            case 5: deleteRecord();
-                break;
-            case 6: searchRecord();
-                break;
-            case 7: listALlRecordsOfAType();
-                break;
+            int selection = scanner.nextInt();
+
+            switch(selection){
+                case 1: createType();
+                    System.out.println(separator);
+                    break;
+                case 2: deleteType();
+                    System.out.println(separator);
+                    break;
+                case 3: listTypes();
+                    System.out.println(separator);
+                    break;
+                case 4: createRecord();
+                    System.out.println(separator);
+                    break;
+                case 5: deleteRecord();
+                    System.out.println(separator);
+                    break;
+                case 6: searchRecord();
+                    System.out.println(separator);
+                    break;
+                case 7: listALlRecordsOfAType();
+                    System.out.println(separator);
+                    break;
+                case -1: operate = false;
+                    break;
+            }
         }
     }
 
@@ -79,7 +95,6 @@ public class DatabaseManager {
            fieldNames[i] = scanner.next();
         }
 
-        //this.sysCatManager.addTypeInfo(typeName,fieldNumber,fieldNames);
         this.sysCatManager.addType(typeName,fieldNumber,fieldNames);
 
         TypeManager typeManager = new TypeManager(typeName);
@@ -97,7 +112,7 @@ public class DatabaseManager {
             System.out.println("The type you want to delete doesn't exist.");
             return;
         }
-        sysCatManager.isDeletedData.add(typeIndex,1);   // Delete operation.
+        sysCatManager.isDeletedData.set(typeIndex,1);   // Delete operation.
         sysCatManager.setNumberOfDeletedTypes(sysCatManager.getNumberOfDeletedTypes()+1);   // Increase the number of deleted types.
         // Update System Catalog (Print to the file.)
         sysCatManager.update();
@@ -125,6 +140,11 @@ public class DatabaseManager {
 
         System.out.println("Please enter the TYPE NAME of the record you want to create.");
         String typeOfTheRecord = scanner.next();
+
+        if(!sysCatManager.typeNames.contains(typeOfTheRecord)){
+            System.out.println("This type doesn't exist. Please make sure your type is created beforehand.");
+            return;
+        }
 
         // Open the type file.
         TypeManager typeManager = new TypeManager(typeOfTheRecord + ".dat");

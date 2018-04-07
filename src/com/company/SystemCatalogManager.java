@@ -10,6 +10,7 @@ import java.util.Map;
 public class SystemCatalogManager {
 
     public static final int FIELD_NAME_LENGTH = 20;
+    public static final String SYSTEM_CATALOG_NAME = "syscat.ctg";
     FileManager fileManager;
 
     // Header
@@ -26,7 +27,7 @@ public class SystemCatalogManager {
     public SystemCatalogManager() throws IOException {
         File f = new File("syscat.ctg");
         boolean catalogExists = f.exists();
-        fileManager = new FileManager("syscat.ctg",true);
+        fileManager = new FileManager(SYSTEM_CATALOG_NAME,true);
         if(!catalogExists){
             System.out.println("New Database is created. Initializing System Catalog...");
             fillSystemCatalogFile();
@@ -39,36 +40,42 @@ public class SystemCatalogManager {
     public void init() throws IOException {
 
         // Read Header
-        fileManager.seekToStart();
-        typeCount = fileManager.readInt();
-        numberOfDeletedTypes = fileManager.readInt();
+        FileManager inFm = new FileManager(SYSTEM_CATALOG_NAME,false);
+        inFm.seekToStart();
+        typeCount = inFm.readInt();
+        numberOfDeletedTypes = inFm.readInt();
         fieldNames = new HashMap<>();
 
         // Start to read Records if there is any.
         if(typeCount != 0){
             for(int i = 0;i < typeCount;i++){
-                isDeletedData.add(fileManager.readInt());                      // Read isdeleted data.
-                pageCounts.add(fileManager.readInt());
-                typeNames.add(fileManager.readString(FIELD_NAME_LENGTH).trim());   // Read type name.
-                fieldCounts.add(fileManager.readInt());                     // Read field count of that type.
+                isDeletedData.add(inFm.readInt());                      // Read isdeleted data.
+                pageCounts.add(inFm.readInt());
+                typeNames.add(inFm.readString(FIELD_NAME_LENGTH).trim());   // Read type name.
+                fieldCounts.add(inFm.readInt());                     // Read field count of that type.
                 String[] tempFieldNames = new String[fieldCounts.get(i)];
                 for(int j = 0; j < fieldCounts.get(i); j++){
-                    tempFieldNames[j] = fileManager.readString(FIELD_NAME_LENGTH).trim();
+                    tempFieldNames[j] = inFm.readString(FIELD_NAME_LENGTH).trim();
                 }
                 fieldNames.put(typeNames.get(i),tempFieldNames);
             }
         }
+        inFm.close();
     }
 
     private void fillSystemCatalogFile() throws IOException {
-        fileManager.seekToStart();
-        fileManager.writeInt(0);    // Number of types.
-        fileManager.writeInt(0);    // Number of deleted types.
+        FileManager inFm = new FileManager(SYSTEM_CATALOG_NAME,true);
+        inFm.seekToStart();
+        inFm.writeInt(0);    // Number of types.
+        inFm.writeInt(0);    // Number of deleted types.
+        inFm.close();
     }
 
     public void setTypeCount(int aTypeCount) throws IOException {
-        fileManager.seekToStart();
-        fileManager.writeInt(aTypeCount);
+        FileManager inFm = new FileManager(SYSTEM_CATALOG_NAME,true);
+        inFm.seekToStart();
+        inFm.writeInt(aTypeCount);
+        inFm.close();
     }
 
     public int getTypeCount(){
@@ -76,30 +83,15 @@ public class SystemCatalogManager {
     }
 
     public void setNumberOfDeletedTypes(int aNumberOfDeletedTypes) throws IOException {
-        fileManager.seek(4,true);   // Go to the position of number of deleted types.
-        fileManager.writeInt(aNumberOfDeletedTypes);
+        FileManager inFm = new FileManager(SYSTEM_CATALOG_NAME,true);
+        inFm.seek(4,true);   // Go to the position of number of deleted types.
+        inFm.writeInt(aNumberOfDeletedTypes);
+        inFm.close();
     }
 
     public int getNumberOfDeletedTypes(){
         return numberOfDeletedTypes;
     }
-
-    /*
-    public void addTypeInfo(String name,int fieldNumber,String[] fieldNames) throws IOException {
-        if (numberOfDeletedTypes != 0){
-            // Find the location to insert the type field.
-
-        }
-        fileManager.seekToEnd();
-        fileManager.writeInt(0);                    // Not deleted.
-        fileManager.writeInt(1);                    // Page Count = 1
-        fileManager.writeString(name,20);       // 20 is the fixed length
-        fileManager.writeInt(fieldNumber);             // Write the field number
-        for (String fieldName : fieldNames){
-            fileManager.writeString(fieldName,20);
-        }
-    }
-    */
 
     public void addType(String name,int fieldCount,String[] fieldNames) throws IOException {
         int indexToInsert = getDeletedSpaceIndex();
@@ -161,22 +153,24 @@ public class SystemCatalogManager {
     }
 
     public void update() throws IOException {
-        fileManager.seekToStart();
-        fileManager.writeInt(typeCount);
-        fileManager.writeInt(numberOfDeletedTypes);
+        FileManager inFm = new FileManager(SYSTEM_CATALOG_NAME,true);
+        inFm.seekToStart();
+        inFm.writeInt(typeCount);
+        inFm.writeInt(numberOfDeletedTypes);
         for(int i = 0;i < typeNames.size();i++){
-            fileManager.writeInt(isDeletedData.get(i));               // isDeleted flag
-            fileManager.writeInt(pageCounts.get(i));                  // page Count
-            fileManager.writeString(typeNames.get(i),20);      //  Type name
-            fileManager.writeInt(fieldCounts.get(i));                 // Field Count
+            inFm.writeInt(isDeletedData.get(i));               // isDeleted flag
+            inFm.writeInt(pageCounts.get(i));                  // page Count
+            inFm.writeString(typeNames.get(i),20);      //  Type name
+            inFm.writeInt(fieldCounts.get(i));                 // Field Count
 
             String[] fields = fieldNames.get(typeNames.get(i));         // Get the field names of the current type.
             for (int j = 0; j<fields.length;j++){
                 if(fields[j].equals("")){                              // For skipping the empty field names.
                     break;
                 }
-                fileManager.writeString(fields[j],20);           // Write the field name.
+                inFm.writeString(fields[j],20);           // Write the field name.
             }
         }
+        inFm.close();
     }
 }
