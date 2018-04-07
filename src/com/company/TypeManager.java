@@ -16,6 +16,7 @@ public class TypeManager {
     int pageCount;
 
     public TypeManager(String aTypeName) throws IOException {
+        //  TODO If the file exist already, just read the file and load the required pages and config (header).
         systemCatalogManager = new SystemCatalogManager();
         typeName = aTypeName;
         fileManager = new FileManager(typeName + ".t", true);

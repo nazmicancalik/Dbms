@@ -88,4 +88,8 @@ public class FileManager {
     public void seekToStart() throws IOException {
         raf.seek(0);
     }
+
+    public void close() throws IOException {
+        raf.close();
+    }
 }

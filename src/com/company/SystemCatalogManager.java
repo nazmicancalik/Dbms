@@ -84,6 +84,7 @@ public class SystemCatalogManager {
         return numberOfDeletedTypes;
     }
 
+    /*
     public void addTypeInfo(String name,int fieldNumber,String[] fieldNames) throws IOException {
         if (numberOfDeletedTypes != 0){
             // Find the location to insert the type field.
@@ -97,6 +98,32 @@ public class SystemCatalogManager {
         for (String fieldName : fieldNames){
             fileManager.writeString(fieldName,20);
         }
+    }
+    */
+
+    public void addType(String name,int fieldCount,String[] fieldNames) throws IOException {
+        int indexToInsert = getDeletedSpaceIndex();
+        if (indexToInsert == -1){
+            this.typeCount++;
+            // Add to the last place of records.
+            isDeletedData.add(0);                   // Not deleted.
+            pageCounts.add(1);                      // Page Count = 1
+            typeNames.add(name);                    // Type name
+            fieldCounts.add(fieldCount);            // Field Count
+            this.fieldNames.put(name,fieldNames);   // Add field names.
+        }else{
+            //Add to the removed ones place.
+            String typeToReplace = typeNames.get(indexToInsert);
+            isDeletedData.set(indexToInsert,0);                     // Not deleted.
+            pageCounts.set(indexToInsert,1);                     // Page Count = 1
+            typeNames.set(indexToInsert,name);                      // Type name
+            fieldCounts.set(indexToInsert,fieldCount);              // Field Count
+            this.fieldNames.put(name,fieldNames);                   // Add field names.
+
+            // Delete the old record from the map.
+            this.fieldNames.remove(typeToReplace);
+        }
+        this.update();
     }
 
     public int getPageCountOfAType(String typeName){
@@ -116,10 +143,15 @@ public class SystemCatalogManager {
         return fileManager.readInt();
     }
 
-    public int getTypeIndex(String typeName){
-        if (typeNames.isEmpty()){
-            return -1;
+    public int getDeletedSpaceIndex(){
+        for(int i = 0;i<isDeletedData.size();i++){
+            if (isDeletedData.get(i) == 1){
+                return i;
+            }
         }
+        return -1;
+    }
+    public int getTypeIndex(String typeName){
         int i;
         for(i=0;i < typeNames.size();i++){
             if (typeNames.get(i).equals(typeName))
@@ -140,10 +172,10 @@ public class SystemCatalogManager {
 
             String[] fields = fieldNames.get(typeNames.get(i));         // Get the field names of the current type.
             for (int j = 0; j<fields.length;j++){
-                if(fields[i].equals("")){                              // For skipping the empty field names.
+                if(fields[j].equals("")){                              // For skipping the empty field names.
                     break;
                 }
-                fileManager.writeString(fields[i],20);           // Write the field name.
+                fileManager.writeString(fields[j],20);           // Write the field name.
             }
         }
     }

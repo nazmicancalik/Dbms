@@ -79,9 +79,8 @@ public class DatabaseManager {
            fieldNames[i] = scanner.next();
         }
 
-        // Increase type count and add the necessary info for the new type.
-        this.sysCatManager.setTypeCount(this.sysCatManager.getTypeCount()+1);
-        this.sysCatManager.addTypeInfo(typeName,fieldNumber,fieldNames);
+        //this.sysCatManager.addTypeInfo(typeName,fieldNumber,fieldNames);
+        this.sysCatManager.addType(typeName,fieldNumber,fieldNames);
 
         TypeManager typeManager = new TypeManager(typeName);
         typeManager.init();
