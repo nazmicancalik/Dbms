@@ -176,6 +176,11 @@ public class DatabaseManager {
         System.out.println("Searching operation is started...");
         System.out.println("Please enter the type name of the record you want to search.");
         String typeName = scanner.next();
+        // If the element is deleted.
+        if(this.sysCatManager.isDeletedData.get(this.sysCatManager.getTypeIndex(typeName)) == 1){
+            System.out.println("The type you are searching for doesn't exist.");
+            return;
+        }
         System.out.println("Please enter the primary key of the record you want to search.");
         int primaryKey = scanner.nextInt();
 
@@ -188,7 +193,11 @@ public class DatabaseManager {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter the TYPE NAME to list its records.");
         String typeName = scanner.next();
-
+        // If the element is deleted.
+        if(this.sysCatManager.getTypeIndex(typeName) == -1 || this.sysCatManager.isDeletedData.get(this.sysCatManager.getTypeIndex(typeName)) == 1 ){
+            System.out.println("The type you are trying to list doesn't exist.");
+            return;
+        }
         TypeManager typeManager = new TypeManager(typeName);
         typeManager.listAllRecords();
     }

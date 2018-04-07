@@ -93,7 +93,7 @@ public class SystemCatalogManager {
         return numberOfDeletedTypes;
     }
 
-    public void addType(String name,int fieldCount,String[] fieldNames) throws IOException {
+    public void addType(String name,int fieldCount,String[] aFieldNames) throws IOException {
         int indexToInsert = getDeletedSpaceIndex();
         if (indexToInsert == -1){
             this.typeCount++;
@@ -102,7 +102,7 @@ public class SystemCatalogManager {
             pageCounts.add(1);                      // Page Count = 0
             typeNames.add(name);                    // Type name
             fieldCounts.add(fieldCount);            // Field Count
-            this.fieldNames.put(name,fieldNames);   // Add field names.
+            this.fieldNames.put(name,aFieldNames);   // Add field names.
         }else{
             //Add to the removed ones place.
             String typeToReplace = typeNames.get(indexToInsert);
@@ -110,10 +110,13 @@ public class SystemCatalogManager {
             pageCounts.set(indexToInsert,1);                     // Page Count = 0
             typeNames.set(indexToInsert,name);                      // Type name
             fieldCounts.set(indexToInsert,fieldCount);              // Field Count
-            this.fieldNames.put(name,fieldNames);                   // Add field names.
+            this.fieldNames.put(name,aFieldNames);                   // Add field names.
 
-            // Delete the old record from the map.
-            this.fieldNames.remove(typeToReplace);
+            // Delete the old record from the map if their names different of course.
+            // Otherwise it deletes the new added type which has different fields however same name with the deleted one.
+            if(!typeToReplace.equals(name)){
+                this.fieldNames.remove(typeToReplace);
+            }
         }
         this.update();
     }
