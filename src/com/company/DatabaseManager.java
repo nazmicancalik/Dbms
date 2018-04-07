@@ -2,6 +2,7 @@ package com.company;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -9,7 +10,9 @@ import java.util.Scanner;
 public class DatabaseManager {
 
     public static final String separator = "==========================================================";
+    public static final long SIZE_LIMIT = 10000000;
     public static final int MAX_NUMBER_OF_FIELDS = 10;
+    private static final String SYSTEM_CATALOG_NAME = "syscat.ctg";
     SystemCatalogManager sysCatManager;
     FileManager fileManager;
     String[] operations = {
@@ -49,16 +52,27 @@ public class DatabaseManager {
             int selection = scanner.nextInt();
 
             switch(selection){
-                case 1: createType();
+                case 1:
+                    if(isFull()){
+                        System.out.println("You are out of space. You can't add type.");
+                        break;
+                    }
+                    createType();
                     System.out.println(separator);
                     break;
-                case 2: deleteType();
+                case 2:
+                    deleteType();
                     System.out.println(separator);
                     break;
                 case 3: listTypes();
                     System.out.println(separator);
                     break;
-                case 4: createRecord();
+                case 4:
+                    if(isFull()){
+                        System.out.println("You are out of space. You can't create record.");
+                        break;
+                    }
+                    createRecord();
                     System.out.println(separator);
                     break;
                 case 5: deleteRecord();
@@ -200,5 +214,22 @@ public class DatabaseManager {
         }
         TypeManager typeManager = new TypeManager(typeName);
         typeManager.listAllRecords();
+    }
+
+    public boolean isFull(){
+        File dir = new File(".");
+        File [] files = dir.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".t");
+            }
+        });
+        long size = 0;
+        for (File tFile : files){
+            size += tFile.length();
+        }
+        File file = new File(SYSTEM_CATALOG_NAME);
+        size += file.length();
+        return size > SIZE_LIMIT;
     }
 }
