@@ -141,7 +141,7 @@ public class TypeManager {
             System.out.println("Searching Page #"+i+" ...");
             if (page.numberOfRecords != 0){
                 for (int j = 0; j < NUMBER_OF_RECORDS_IN_PAGE;j++){
-                    // If the record is empty or deleted.
+                    // If the record is not empty or deleted.
                     if (page.isDeleted[j] == 0){
                         // Check for the given records first field (primary key)
                         if(page.fieldValues[j][0] == primaryKey) {
@@ -149,6 +149,7 @@ public class TypeManager {
                             System.out.println("Record is found on page #" + i + " record #"+ j);
                             String[] fieldNames = systemCatalogManager.fieldNames.get(typeName);
 
+                            // ****** PRINTING PART ******
                             // Print field names.
                             System.out.print("\n"+typeName+"\t\t");
                             for (int k = 0; k < fieldNames.length; k++){
@@ -173,6 +174,39 @@ public class TypeManager {
 
         if(!found){
             System.out.println("The record you are looking for doesn't exist.");
+        }
+    }
+
+    public void listAllRecords() throws IOException {
+        int pageCount = systemCatalogManager.getPageCountOfAType(typeName);
+        Page page;
+        for (int i = 0;i < pageCount;i++){
+            page = loadPage(i);
+            // If the page is not full totally.
+            System.out.println("Reading Page #"+i+" ...");
+            if (page.numberOfRecords != 0){
+
+                String[] fieldNames = systemCatalogManager.fieldNames.get(typeName);
+                // Print field names.
+                System.out.print(typeName.toUpperCase()+"\t\t");
+                for (int k = 0; k < fieldNames.length; k++){
+                    System.out.print(fieldNames[k]);
+                    System.out.print("\t");
+                }
+                System.out.println("\n           \t-------------------");
+                for (int j = 0; j < NUMBER_OF_RECORDS_IN_PAGE;j++){
+                    // If the record is not empty or deleted.
+                    if (page.isDeleted[j] == 0){
+                        // Print field values.
+                        System.out.print("Record #"+j+"\t");
+                        for (int k = 0; k < fieldNames.length; k++){
+                            System.out.print(page.fieldValues[j][k]);
+                            System.out.print("\t");
+                        }
+                        System.out.println();
+                    }
+                }
+            }
         }
     }
 }

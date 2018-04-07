@@ -177,7 +177,12 @@ public class DatabaseManager {
 
     }
 
-    public void listALlRecordsOfAType(){
-        System.out.println("All records of a type.");
+    public void listALlRecordsOfAType() throws IOException {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter the TYPE NAME to list its records.");
+        String typeName = scanner.next();
+
+        TypeManager typeManager = new TypeManager(typeName);
+        typeManager.listAllRecords();
     }
 }
