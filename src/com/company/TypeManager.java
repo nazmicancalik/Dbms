@@ -35,7 +35,7 @@ public class TypeManager {
     }
 
     public void fillTypeFile() throws IOException {
-        addPageToEnd();
+        addFirstPage();
     }
 
     public Page loadPage(int pageIndex) throws IOException {
@@ -69,6 +69,11 @@ public class TypeManager {
         Page emptyPage = new Page(typeName);        // Initialize an empty page.
         writePage(emptyPage,systemCatalogManager.getPageCountOfAType(typeName));
         increasePageCount();
+    }
+
+    public void addFirstPage() throws IOException {
+        Page emptyPage = new Page(typeName);        // Initialize an empty page.
+        writePage(emptyPage,0);
     }
 
     public void writePage(Page page, int index) throws IOException {

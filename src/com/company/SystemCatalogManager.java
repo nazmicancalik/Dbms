@@ -99,7 +99,7 @@ public class SystemCatalogManager {
             this.typeCount++;
             // Add to the last place of records.
             isDeletedData.add(0);                   // Not deleted.
-            pageCounts.add(0);                      // Page Count = 0
+            pageCounts.add(1);                      // Page Count = 0
             typeNames.add(name);                    // Type name
             fieldCounts.add(fieldCount);            // Field Count
             this.fieldNames.put(name,fieldNames);   // Add field names.
@@ -107,7 +107,7 @@ public class SystemCatalogManager {
             //Add to the removed ones place.
             String typeToReplace = typeNames.get(indexToInsert);
             isDeletedData.set(indexToInsert,0);                     // Not deleted.
-            pageCounts.set(indexToInsert,0);                     // Page Count = 0
+            pageCounts.set(indexToInsert,1);                     // Page Count = 0
             typeNames.set(indexToInsert,name);                      // Type name
             fieldCounts.set(indexToInsert,fieldCount);              // Field Count
             this.fieldNames.put(name,fieldNames);                   // Add field names.
