@@ -9,6 +9,7 @@ import java.util.Scanner;
 public class DatabaseManager {
 
     public static final String separator = "==========================================================";
+    public static final int MAX_NUMBER_OF_FIELDS = 10;
     SystemCatalogManager sysCatManager;
     FileManager fileManager;
     String[] operations = {
@@ -135,35 +136,45 @@ public class DatabaseManager {
     }
 
     public void createRecord() throws IOException {
-        System.out.println("Creating a record.");
+        System.out.println("Creating a record...");
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Please enter the TYPE NAME of the record you want to create.");
         String typeOfTheRecord = scanner.next();
 
+        // Stop if the type doesn't exist.
         if(!sysCatManager.typeNames.contains(typeOfTheRecord)){
             System.out.println("This type doesn't exist. Please make sure your type is created beforehand.");
             return;
         }
 
         // Open the type file.
-        TypeManager typeManager = new TypeManager(typeOfTheRecord + ".dat");
-        //if(this.sysCatManager.checkTypeExists(typeOfTheRecord)){
-            for(int i = 0;i <  sysCatManager.getFieldNumberOfAType(typeOfTheRecord);i++){
-                System.out.println("yaeaadad");
-            }
-        //}else{
-        //    System.out.println("Type you want to create doesn't exist");
-        //    return;
-        //}
+        int fieldCount = sysCatManager.fieldCounts.get(sysCatManager.getTypeIndex(typeOfTheRecord));
+        int[] fields = new int[MAX_NUMBER_OF_FIELDS];
+        Arrays.fill(fields,0);
+        for (int i = 0; i < fieldCount; i++){
+            System.out.println("Please enter the field value #"+i);
+            fields[i] = scanner.nextInt();
+        }
+        TypeManager typeManager = new TypeManager(typeOfTheRecord);
+        typeManager.addRecord(fields);
     }
 
     public void deleteRecord(){
         System.out.println("Deleted a record.");
     }
 
-    public void searchRecord(){
-        System.out.println("Searched for a record");
+    public void searchRecord() throws IOException {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Searching operation is started...");
+        System.out.println("Please enter the type name of the record you want to search.");
+        String typeName = scanner.next();
+        System.out.println("Please enter the primary key of the record you want to search.");
+        int primaryKey = scanner.nextInt();
+
+        TypeManager typeManager = new TypeManager(typeName);
+        typeManager.search(primaryKey);
+
     }
 
     public void listALlRecordsOfAType(){
