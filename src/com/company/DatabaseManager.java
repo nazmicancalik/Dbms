@@ -1,7 +1,6 @@
 package com.company;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Arrays;
@@ -27,7 +26,6 @@ public class DatabaseManager {
 
     public static void main(String[] args) throws IOException {
         DatabaseManager databaseManager = new DatabaseManager();
-        Scanner scanner = new Scanner(System.in);
         databaseManager.chooseOperation();
     }
 
@@ -190,6 +188,11 @@ public class DatabaseManager {
         System.out.println("Searching operation is started...");
         System.out.println("Please enter the type name of the record you want to search.");
         String typeName = scanner.next();
+        // If the type doesnt exist.
+        if(!this.sysCatManager.typeNames.contains(typeName)){
+            System.out.println("The type you are searching for doesn't exist.");
+            return;
+        }
         // If the element is deleted.
         if(this.sysCatManager.isDeletedData.get(this.sysCatManager.getTypeIndex(typeName)) == 1){
             System.out.println("The type you are searching for doesn't exist.");
